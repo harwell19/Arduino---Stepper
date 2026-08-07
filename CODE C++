@@ -1,0 +1,44 @@
+/*-----------------------------------------
+Arduino C++
+Project: Running linearly a stepper shaft at 150RPM with Non-blocking function
+Author : Harwell
+Date: 2026/06/02
+
+The key idea in this project is visualize the function stepInterval,
+stepInterval is the half-pulse of a step. 
+
+A stepper shaft spin with STEPS, 200 steps per revolution for NEMA 17,
+this means 1.8degrees each step. Each step receive a PULSE, divided in 
+LOW and HIGH. Knowign this so have the pulse Interval calculation:
+Interval = (1 min * 60,000,000 microseconds/min) / (steps Per revolution (in step/rev) * Speed (in rev/min) * PULSE (2 = LOW and HIGH)
+as a result a pulse speed unit --> Interval = microseconds/step
+*/
+
+#define dirPin 2
+#define stepPin 3
+int stepsPerRev = 200;
+int rpm = 150;
+unsigned long stepInterval;
+unsigned long lastStepMicros = 0;
+int stepState = LOW;
+
+void setup(){
+  Serial.begin(115200);
+  pinMode(dirPin, OUTPUT);
+  pinMode(stepPin, OUTPUT);
+  stepInterval = 60000000UL / (rpm * stepsPerRev * 2.);
+  digitalWrite(dirPin, HIGH);
+}
+
+void loop(){
+  unsigned long currentStepMicros = micros();
+  if(currentStepMicros - lastStepMicros >= stepInterval){
+    lastStepMicros += stepInterval;
+    stepState = (stepState == LOW)? HIGH:LOW;
+    digitalWrite(stepPin, stepState);
+
+    unsigned long currentSpeed = 60000000UL / (stepsPerRev * stepInterval *2.);
+    Serial.print("RPM: ");
+    Serial.println(currentSpeed);
+  }
+}
