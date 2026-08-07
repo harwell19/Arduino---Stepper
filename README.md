@@ -13,6 +13,7 @@
 
 ### we calculate the microseconds per step using the following formula:
 
-### 
+### Interval = (1 min * 60,000,000 microseconds/min) / (steps Per revolution (in step/rev) * Speed (in rev/min) * PULSE (2 = LOW and HIGH)
+### as a result a pulse speed unit --> Interval = microseconds/step
 
 
